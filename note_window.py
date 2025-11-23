@@ -206,7 +206,7 @@ class NoteContent(QTextEdit):
         for i in range(doc.blockCount()):
             block = doc.findBlockByNumber(i)
             text = block.text()
-            if not text.startswith("☐ ") and not text.startswith("☑ "):
+            if not text.startswith("☐ ") and not text.startswith("⬛ "):
                 cursor.setPosition(block.position())
                 cursor.insertText("☐ ")
 
@@ -220,7 +220,7 @@ class NoteContent(QTextEdit):
         for i in range(doc.blockCount()):
             block = doc.findBlockByNumber(i)
             text = block.text()
-            if text.startswith("☐ ") or text.startswith("☑ "):
+            if text.startswith("☐ ") or text.startswith("⬛ "):
                 cursor.setPosition(block.position())
                 cursor.movePosition(cursor.MoveOperation.Right, cursor.MoveMode.KeepAnchor, 2)
                 cursor.removeSelectedText()
@@ -235,8 +235,13 @@ class NoteContent(QTextEdit):
         cursor.endEditBlock()
 
     def keyPressEvent(self, event):
-        if self.checklist_mode and event.key() == Qt.Key.Key_Return:
+        if self.checklist_mode and (event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter):
             cursor = self.textCursor()
+            # Reset format for the new line
+            fmt = cursor.charFormat()
+            fmt.setForeground(QColor(Styles.TEXT_COLOR))
+            fmt.setFontStrikeOut(False)
+            cursor.setCharFormat(fmt)
             cursor.insertText("\n☐ ")
             return
         super().keyPressEvent(event)
@@ -255,7 +260,7 @@ class NoteContent(QTextEdit):
                 if text.startswith("☐ "):
                     self.toggle_checkbox(block, True)
                     return
-                elif text.startswith("☑ "):
+                elif text.startswith("⬛ "):
                     self.toggle_checkbox(block, False)
                     return
 
@@ -267,7 +272,14 @@ class NoteContent(QTextEdit):
         cursor.movePosition(cursor.MoveOperation.Right, cursor.MoveMode.KeepAnchor, 2)
 
         cursor.beginEditBlock()
-        cursor.insertText("☑ " if checked else "☐ ")
+
+        # Insert checkbox with normal format
+        normal_fmt = cursor.charFormat()
+        normal_fmt.setForeground(QColor(Styles.TEXT_COLOR))
+        normal_fmt.setFontStrikeOut(False)
+
+        cursor.setCharFormat(normal_fmt)
+        cursor.insertText("⬛ " if checked else "☐ ")
 
         # Apply styling to the rest of the line
         cursor.movePosition(cursor.MoveOperation.EndOfBlock, cursor.MoveMode.KeepAnchor)
@@ -395,7 +407,7 @@ class NoteWindow(QMainWindow):
         for i in range(doc.blockCount()):
             block = doc.findBlockByNumber(i)
             text = block.text()
-            if text.startswith("☑ "):
+            if text.startswith("⬛ "):
                 cursor.setPosition(block.position())
                 cursor.movePosition(cursor.MoveOperation.EndOfBlock, cursor.MoveMode.KeepAnchor)
                 fmt = cursor.charFormat()
