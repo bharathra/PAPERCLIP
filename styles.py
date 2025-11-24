@@ -26,7 +26,7 @@ class Styles:
         }}
         QWidget#CentralWidget {{
             background-color: {bg_color};
-            border-radius: 10px;
+            border-radius: 16px;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }}
     """

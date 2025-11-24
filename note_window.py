@@ -39,7 +39,7 @@ class TitleBar(QFrame):
         # Add Button
         self.add_btn = QPushButton()
         self.add_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/add.png")))
-        self.add_btn.setIconSize(QSize(16, 16))
+        self.add_btn.setIconSize(QSize(20, 20))
         self.add_btn.setFixedSize(20, 20)
         self.add_btn.setCursor(Qt.CursorShape.ArrowCursor)
         self.add_btn.setToolTip("New Note")
@@ -52,7 +52,7 @@ class TitleBar(QFrame):
         # Color Button
         self.color_btn = QPushButton()
         self.color_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/color_palette.png")))
-        self.color_btn.setIconSize(QSize(16, 16))
+        self.color_btn.setIconSize(QSize(20, 20))
         self.color_btn.setFixedSize(20, 20)
         self.color_btn.setCursor(Qt.CursorShape.ArrowCursor)
         self.color_btn.setToolTip("Change Color")
@@ -65,7 +65,7 @@ class TitleBar(QFrame):
         # Checkbox Button
         self.checkbox_btn = QPushButton()
         self.checkbox_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/check_box.png")))
-        self.checkbox_btn.setIconSize(QSize(16, 16))
+        self.checkbox_btn.setIconSize(QSize(20, 20))
         self.checkbox_btn.setFixedSize(20, 20)
         self.checkbox_btn.setCursor(Qt.CursorShape.ArrowCursor)
         self.checkbox_btn.setToolTip("Toggle Checkboxes")
@@ -78,7 +78,7 @@ class TitleBar(QFrame):
         # Delete Button
         self.delete_btn = QPushButton()
         self.delete_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/delete.png")))
-        self.delete_btn.setIconSize(QSize(16, 16))
+        self.delete_btn.setIconSize(QSize(20, 20))
         self.delete_btn.setFixedSize(20, 20)
         self.delete_btn.setCursor(Qt.CursorShape.ArrowCursor)
         self.delete_btn.setToolTip("Delete Note")
@@ -86,10 +86,12 @@ class TitleBar(QFrame):
         layout.addWidget(self.delete_btn)
 
         # Thick Separator
-        self.add_separator(layout, thickness=4)
+        self.add_separator(layout, thickness=5)
 
         # Close Button
-        self.close_btn = QPushButton("×")
+        self.close_btn = QPushButton()
+        self.close_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/close.png")))
+        self.close_btn.setIconSize(QSize(20, 20))
         self.close_btn.setFixedSize(20, 20)
         self.close_btn.setCursor(Qt.CursorShape.ArrowCursor)
         self.close_btn.setToolTip("Close Window")
@@ -98,12 +100,12 @@ class TitleBar(QFrame):
 
         self.start_pos = None
 
-    def add_separator(self, layout, thickness=1):
+    def add_separator(self, layout, thickness=1, color="rgba(0, 0, 0, 0.35)"):
         line = QFrame()
         line.setFrameShape(QFrame.Shape.VLine)
         line.setFrameShadow(QFrame.Shadow.Sunken)
         line.setFixedWidth(thickness)
-        line.setStyleSheet(f"background-color: rgba(0, 0, 0, 0.2); border: none;")
+        line.setStyleSheet(f"background-color: {color}; border: none;")
         layout.addWidget(line)
 
     def toggle_checkboxes(self):
