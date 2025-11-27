@@ -14,10 +14,28 @@ from PyQt6.QtWidgets import QApplication
 class PaperClipApp:
     def __init__(self):
         self.app = QApplication(sys.argv)
-        self.manager = NoteManager()
+        self.app.setApplicationName("PaperClip")
+        self.app.setDesktopFileName("paperclip.desktop")
+
+        # Use SNAP_USER_DATA if available, otherwise default to "notes_data"
+        storage_path = os.environ.get("SNAP_USER_DATA", "notes_data")
+        self.manager = NoteManager(storage_dir=storage_path)
         self.windows = {}  # note_id -> NoteWindow
 
+        # Set global window icon
+        icon_path = self.get_resource_path("icons/paper_clip_grey.png")
+        if os.path.exists(icon_path):
+            from PyQt6.QtGui import QIcon
+            self.app.setWindowIcon(QIcon(icon_path))
+
         self.load_notes()
+
+    def get_resource_path(self, relative_path):
+        """Get absolute path to resource"""
+        snap_root = os.environ.get("SNAP")
+        if snap_root:
+            return os.path.join(snap_root, "share/paperclip", relative_path)
+        return os.path.join(os.path.dirname(__file__), relative_path)
 
     def load_notes(self):
         notes = self.manager.load_notes()
@@ -67,6 +85,10 @@ class PaperClipApp:
         sys.exit(self.app.exec())
 
 
-if __name__ == "__main__":
+def main():
     paperclip = PaperClipApp()
     paperclip.run()
+
+
+if __name__ == "__main__":
+    main()

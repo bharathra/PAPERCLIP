@@ -1,0 +1,39 @@
+name: paperclip
+base: core22
+version: "1.0.0"
+summary: A sticky note application
+description: |
+  PaperClip is a simple, elegant sticky note application for Linux.
+
+grade: stable
+confinement: strict
+icon: icons/paper_clip_yellow.png
+
+apps:
+  paperclip:
+    command: bin/paperclip
+    extensions: [gnome]
+    desktop: snap/gui/paperclip.desktop
+    environment:
+      NO_AT_BRIDGE: "1"
+    plugs:
+      - home
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+
+parts:
+  paperclip:
+    plugin: python
+    source: .
+    python-packages:
+      - PyQt6
+    stage-packages:
+      - libxkbcommon-x11-0
+
+  icons:
+    plugin: dump
+    source: icons
+    organize:
+      "*": share/paperclip/icons/

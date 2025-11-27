@@ -4,7 +4,8 @@ import os
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QTextEdit, QFrame, QSizeGrip, QApplication, QMenu, QLabel)
 from PyQt6.QtCore import Qt, QPoint, QTimer, pyqtSignal, QSize
-from PyQt6.QtGui import QColor, QCursor, QAction, QTextBlockFormat, QShortcut, QKeySequence, QPixmap, QIcon
+from PyQt6.QtGui import (QColor, QCursor, QAction, QTextBlockFormat, QShortcut,
+                         QKeySequence, QPixmap, QIcon)
 
 from styles import Styles
 
@@ -23,8 +24,8 @@ class TitleBar(QFrame):
 
         # App Icon
         self.icon_label = QLabel()
-        self.icon_label.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "icons/paper_clip.png")
-                                          ).scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+        self.icon_label.setPixmap(QPixmap(self.get_resource_path("icons/paper_clip.png"))
+                                  .scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         self.icon_label.setStyleSheet("background: transparent; border: none;")
         layout.addWidget(self.icon_label)
 
@@ -38,7 +39,7 @@ class TitleBar(QFrame):
 
         # Add Button
         self.add_btn = QPushButton()
-        self.add_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/add.png")))
+        self.add_btn.setIcon(QIcon(self.get_resource_path("icons/add.png")))
         self.add_btn.setIconSize(QSize(20, 20))
         self.add_btn.setFixedSize(20, 20)
         self.add_btn.setCursor(Qt.CursorShape.ArrowCursor)
@@ -51,7 +52,7 @@ class TitleBar(QFrame):
 
         # Color Button
         self.color_btn = QPushButton()
-        self.color_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/color_palette.png")))
+        self.color_btn.setIcon(QIcon(self.get_resource_path("icons/color_palette.png")))
         self.color_btn.setIconSize(QSize(20, 20))
         self.color_btn.setFixedSize(20, 20)
         self.color_btn.setCursor(Qt.CursorShape.ArrowCursor)
@@ -64,7 +65,7 @@ class TitleBar(QFrame):
 
         # Checkbox Button
         self.checkbox_btn = QPushButton()
-        self.checkbox_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/check_box.png")))
+        self.checkbox_btn.setIcon(QIcon(self.get_resource_path("icons/check_box.png")))
         self.checkbox_btn.setIconSize(QSize(20, 20))
         self.checkbox_btn.setFixedSize(20, 20)
         self.checkbox_btn.setCursor(Qt.CursorShape.ArrowCursor)
@@ -77,7 +78,7 @@ class TitleBar(QFrame):
 
         # Delete Button
         self.delete_btn = QPushButton()
-        self.delete_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/delete.png")))
+        self.delete_btn.setIcon(QIcon(self.get_resource_path("icons/delete.png")))
         self.delete_btn.setIconSize(QSize(20, 20))
         self.delete_btn.setFixedSize(20, 20)
         self.delete_btn.setCursor(Qt.CursorShape.ArrowCursor)
@@ -90,7 +91,7 @@ class TitleBar(QFrame):
 
         # Close Button
         self.close_btn = QPushButton()
-        self.close_btn.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/close.png")))
+        self.close_btn.setIcon(QIcon(self.get_resource_path("icons/close.png")))
         self.close_btn.setIconSize(QSize(20, 20))
         self.close_btn.setFixedSize(20, 20)
         self.close_btn.setCursor(Qt.CursorShape.ArrowCursor)
@@ -99,6 +100,15 @@ class TitleBar(QFrame):
         layout.addWidget(self.close_btn)
 
         self.start_pos = None
+
+    def get_resource_path(self, relative_path):
+        """Get absolute path to resource, works for dev and for PyInstaller/Snap"""
+        # Check if running in Snap
+        snap_root = os.environ.get("SNAP")
+        if snap_root:
+            return os.path.join(snap_root, "share/paperclip", relative_path)
+        # Default to local path
+        return os.path.join(os.path.dirname(__file__), relative_path)
 
     def add_separator(self, layout, thickness=1, color="rgba(0, 0, 0, 0.35)"):
         line = QFrame()
@@ -184,13 +194,6 @@ class NoteContent(QTextEdit):
     def show_context_menu(self, pos):
         menu = self.createStandardContextMenu()
         menu.addSeparator()
-
-        toggle_action = QAction("Toggle Checklist Mode", self)
-        toggle_action.setCheckable(True)
-        toggle_action.setChecked(self.checklist_mode)
-        toggle_action.triggered.connect(self.toggle_checklist_mode)
-        menu.addAction(toggle_action)
-
         menu.exec(self.mapToGlobal(pos))
 
     def toggle_checklist_mode(self):
@@ -306,12 +309,16 @@ class NoteWindow(QMainWindow):
     def __init__(self, note_data):
         super().__init__()
         self.note_data = note_data
+        self.setWindowTitle("PaperClip")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         self.color_key = note_data.get("color", "yellow").upper()
         self.setup_ui()
         self.load_data()
+
+        # Set Window Icon
+        self.setWindowIcon(QIcon(self.title_bar.get_resource_path("icons/paper_clip_grey.png")))
 
         # Auto-save timer
         self.save_timer = QTimer()
