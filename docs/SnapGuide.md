@@ -38,3 +38,28 @@ snapcraft upload --release=stable paperclip_1.0.0_amd64.snap
 
 #### 5. Manage
 Visit [dashboard.snapcraft.io](https://dashboard.snapcraft.io/) to manage metadata and releases.
+
+
+## 3. Installing locally for testing
+
+```bash
+snap install --dangerous --classic ./release/paperclip_1.0.0_amd64.snap
+```
+
+--dangerous — allows installing unsigned snaps (since this is your local build)
+
+--classic — grants the snap unrestricted system access (needed if your app requires it)
+
+To verify it installed:
+```bash
+snap list | grep paperclip
+```
+
+To remove it later:
+```bash
+snap remove paperclip
+```
+
+Note: You'll need snapd installed on your system. If you run into permission issues, you may need to add your user to the snapd group or use sudo with the install command.
+
+
